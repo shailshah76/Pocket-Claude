@@ -4,6 +4,7 @@ import { Browser } from './Browser';
 import { isIOS, isStandalone, tildify } from '../util';
 import { IconBell, IconFolder, IconLogout } from './Icons';
 import { Sheet } from './Sheet';
+import { setTheme, useTheme, type ThemePref } from '../theme';
 
 function urlB64ToUint8Array(b64: string) {
   const pad = '='.repeat((4 - (b64.length % 4)) % 4);
@@ -59,6 +60,10 @@ export function Settings({ onClose, onLogout }: { onClose: () => void; onLogout:
 
   return (
     <Sheet title="Settings" onClose={onClose}>
+      <div className="settings-block">
+        <h4>Appearance</h4>
+        <ThemePicker />
+      </div>
       <div className="settings-block">
         <h4>Notifications</h4>
         {!pushSupported ? (
@@ -129,5 +134,24 @@ export function Settings({ onClose, onLogout }: { onClose: () => void; onLogout:
         </Sheet>
       )}
     </Sheet>
+  );
+}
+
+const THEMES: { id: ThemePref; label: string }[] = [
+  { id: 'system', label: 'System' },
+  { id: 'light', label: 'Light' },
+  { id: 'dark', label: 'Dark' },
+];
+
+function ThemePicker() {
+  const theme = useTheme();
+  return (
+    <div className="seg" role="radiogroup" aria-label="Theme">
+      {THEMES.map((m) => (
+        <button key={m.id} role="radio" aria-checked={theme === m.id} className={theme === m.id ? 'on' : ''} onClick={() => setTheme(m.id)}>
+          {m.label}
+        </button>
+      ))}
+    </div>
   );
 }

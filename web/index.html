@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content" />
     <meta name="theme-color" content="#141413" media="(prefers-color-scheme: dark)" />
     <meta name="theme-color" content="#faf9f5" media="(prefers-color-scheme: light)" />
+    <script>
+      // Apply the saved theme before first paint so there's no flash of the wrong colors.
+      try {
+        var t = localStorage.getItem('pc:theme');
+        if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+      } catch (e) {}
+    </script>
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />

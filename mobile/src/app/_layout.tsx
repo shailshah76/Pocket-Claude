@@ -8,6 +8,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { boot, useStore } from '@/lib/store';
 import { useTheme } from '@/lib/theme';
 import { Toast } from '@/components/ui';
+import { LockScreen } from '@/components/LockScreen';
 
 void SplashScreen.preventAutoHideAsync();
 
@@ -40,6 +41,7 @@ export default function RootLayout() {
           <Stack.Screen name="scan" options={{ animation: 'slide_from_bottom' }} />
         </Stack>
         <Toast text={toast} />
+        <LockScreen />
       </View>
     </SafeAreaProvider>
   );

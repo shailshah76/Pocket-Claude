@@ -39,6 +39,15 @@ export function login(pin: string, label: string): LoginResult {
   return { ok: true, token: issueToken(label) };
 }
 
+/** Re-checks the PIN for an already signed-in device (app-lock fallback). Same lockout as login. */
+export function verifyPin(pin: string): Extract<LoginResult, { ok: false }> | { ok: true } {
+  const now = Date.now();
+  if (now < lockedUntil) return { ok: false, retryAfterMs: lockedUntil - now };
+  if (typeof pin !== 'string' || !checkPin(pin)) return fail(now);
+  failures = 0;
+  return { ok: true };
+}
+
 // ── first-run setup ───────────────────────────────────────────────────────
 // Until a PIN exists, whoever presents this one-time code (shown only in the
 // Mac's terminal) gets to choose it — so nobody else on the network can.

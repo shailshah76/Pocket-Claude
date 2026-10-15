@@ -7,7 +7,7 @@ import { basename, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { WebSocket } from 'ws';
 import { loadConfig, saveConfig, type PushSub } from './config.js';
-import { COOKIE, completeSetup, getSetupCode, login, needsSetup, parseCookie, revokeToken, verifyToken, type LoginResult } from './auth.js';
+import { COOKIE, completeSetup, getSetupCode, login, needsSetup, parseCookie, revokeToken, verifyPin, verifyToken, type LoginResult } from './auth.js';
 import { SessionHub, type Runtime } from './sessions.js';
 import { FsError, list, readText, safePath } from './fs.js';
 import { addSubscription, initPush, removeSubscription, sendPush } from './push.js';
@@ -100,6 +100,13 @@ const deviceLabel = (req: FastifyRequest) => String(req.headers['user-agent'] ??
 app.post('/api/login', async (req: FastifyRequest<{ Body: { pin: string } }>, reply: FastifyReply) =>
   signIn(req, reply, login(String(req.body?.pin ?? ''), deviceLabel(req)), 'wrong pin'),
 );
+
+app.post('/api/verify-pin', async (req: FastifyRequest<{ Body: { pin: string } }>, reply: FastifyReply) => {
+  const r = verifyPin(String(req.body?.pin ?? ''));
+  // 403, not 401: the device is still signed in; only the PIN was wrong (401 would sign the app out).
+  if (!r.ok) return reply.code(r.retryAfterMs ? 429 : 403).send({ error: 'wrong pin', retryAfterMs: r.retryAfterMs });
+  return { ok: true };
+});
 
 app.post('/api/setup', async (req: FastifyRequest<{ Body: { code: string; pin: string } }>, reply: FastifyReply) => {
   const r = completeSetup(String(req.body?.code ?? ''), String(req.body?.pin ?? ''), deviceLabel(req));

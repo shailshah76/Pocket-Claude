@@ -2,6 +2,7 @@ import { useSyncExternalStore } from 'react';
 import { AppState } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import * as Haptics from 'expo-haptics';
+import { loadPrefs } from './prefs';
 import type { ClientMsg, Decision, Item, PermissionMode, ServerMsg, SessionState, SessionSummary, Usage } from '../../../shared/types';
 
 export type Phase = 'boot' | 'connect' | 'unreachable' | 'setup' | 'login' | 'ready';
@@ -24,6 +25,8 @@ interface State {
   sessions: SessionSummary[] | null;
   current: SessionState | null;
   toast: string | null;
+  /** App lock is covering the UI (see lock.ts). */
+  locked: boolean;
 }
 
 let state: State = {
@@ -36,6 +39,7 @@ let state: State = {
   sessions: null,
   current: null,
   toast: null,
+  locked: false,
 };
 const listeners = new Set<() => void>();
 function set(patch: Partial<State>) {
@@ -106,7 +110,8 @@ export async function api<T = any>(path: string, init?: { method?: string; body?
     clearTimeout(timer);
   }
   const body = await res.json().catch(() => ({}));
-  if (res.status === 401 && state.phase === 'ready' && !path.startsWith('/api/login')) {
+  // A wrong app-lock PIN must never sign the phone out.
+  if (res.status === 401 && state.phase === 'ready' && !path.startsWith('/api/login') && path !== '/api/verify-pin') {
     void signOut(false);
   }
   if (!res.ok) throw new HttpError(res.status, body?.error ?? `HTTP ${res.status}`, body);
@@ -118,10 +123,24 @@ export function toast(msg: string) {
   setTimeout(() => state.toast === msg && set({ toast: null }), 2600);
 }
 
+export function setLocked(locked: boolean) {
+  set({ locked });
+}
+
 // ── lifecycle ───────────────────────────────────────────────────────────
+// Lock on a cold start of an already signed-in app, but not right after a fresh sign-in.
+let lockWhenReady = false;
+
+function enterReady(patch: Partial<State> = {}) {
+  set({ ...patch, phase: 'ready', locked: state.locked || lockWhenReady });
+  lockWhenReady = false;
+}
+
 export async function boot() {
+  const prefs = await loadPrefs();
   const server = await SecureStore.getItemAsync(K_SERVER);
   token = await SecureStore.getItemAsync(K_TOKEN);
+  lockWhenReady = prefs.appLock && !!token;
   if (!server) return set({ phase: 'connect', server: null });
   set({ server });
   await check();
@@ -135,11 +154,11 @@ export async function check(): Promise<void> {
     if (st.needsSetup) return set({ phase: 'setup' });
     if (!st.authed) return set({ phase: 'login' });
     await loadMe();
-    set({ phase: 'ready' });
+    enterReady();
     connect();
   } catch {
     // Signed in before? Show the app with an offline banner; otherwise a retry screen.
-    if (token && state.me) set({ phase: 'ready', conn: 'offline' });
+    if (token && state.me) enterReady({ conn: 'offline' });
     else set({ phase: 'unreachable' });
   }
 }
@@ -167,7 +186,7 @@ export async function signOut(callServer = true) {
   disconnect();
   token = null;
   await SecureStore.deleteItemAsync(K_TOKEN);
-  set({ phase: 'login', sessions: null, current: null, me: null });
+  set({ phase: 'login', sessions: null, current: null, me: null, locked: false });
 }
 
 export async function forgetServer() {

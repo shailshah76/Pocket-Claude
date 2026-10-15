@@ -37,6 +37,12 @@
       "expo-router",
       "expo-status-bar",
       [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "Unlock Pocket Claude with Face ID"
+        }
+      ],
+      [
         "expo-camera",
         {
           "cameraPermission": "Scan the QR code shown on your computer",
