@@ -103,11 +103,13 @@ if (!tsBin) {
   if (!self) {
     warn('Tailscale is installed but not connected. Open it and sign in, then re-run:  npm run onboard');
   } else {
-    const serve = run(tsBin, ['serve', '--bg', String(PORT)], { quiet: true });
+    // Not quiet: on a new tailnet, `serve` prints an "enable Serve" link and waits
+    // until it's approved in the browser — the user has to see that link.
+    console.log('     If Tailscale shows a link below, open it and click Enable; setup continues by itself.');
+    const serve = run(tsBin, ['serve', '--bg', String(PORT)]);
     const host = String(self.DNSName ?? '').replace(/\.$/, '');
     if (!serve.ok) {
-      warn('`tailscale serve` failed:');
-      console.log(serve.out.trim().split('\n').map((l) => '     ' + l).join('\n'));
+      warn('`tailscale serve` failed (see the message above).');
       console.log('     Usually this means HTTPS certificates are off: enable MagicDNS + HTTPS at https://login.tailscale.com/admin/dns');
     } else if (host) {
       url = `https://${host}`;

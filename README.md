@@ -143,6 +143,7 @@ Usage meters at the top of the home screen show how much of your Claude plan's 5
 |---|---|
 | **"Can't reach your computer"** | The Mac is asleep, or Tailscale is off on the Mac or the phone. Wake the Mac and check that Tailscale is on (and signed into the same account) on both. |
 | **Onboarding says Tailscale isn't connected** | Open Tailscale on the Mac and log in, then run `cd ~/pocket-claude && npm run onboard` again. |
+| **Onboarding stuck at step 4 (Tailscale)** | Tailscale is waiting for you to enable **Serve**. Look for a `login.tailscale.com/f/serve…` link in Terminal, open it and click **Enable**. Setup then continues by itself. |
 | **Onboarding says `tailscale serve` failed** | Turn on **HTTPS Certificates** (Part 1, Step 5) and run onboarding again. |
 | **"Claude Code is not signed in"** | Run `claude`, sign in, type `/exit`, and run onboarding again. |
 | **The setup code doesn't work** | Use the newest code shown in Terminal. Run `npm run onboard` again to see it. |
