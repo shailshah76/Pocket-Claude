@@ -70,7 +70,9 @@ Press **⌘ Command + Space**, type **Terminal**, and press **Return**. A window
    cd ~/pocket-claude && npm install && npm run onboard
    ```
 
-This takes a few minutes. When it's done, Terminal shows a **QR code** and a **setup code** like `AB12-CD34`. **Leave this window open** and set up your phone.
+This takes a few minutes. A **"Connect your phone"** page opens in your browser. It tells you if anything still needs doing (for example, a one-click **Enable** in Tailscale), and then shows a big **QR code** and a **setup code** like `AB12-CD34`. **Leave Terminal open** until the QR code appears, then set up your phone.
+
+> Need the QR code again later, for example to add another phone? Run `cd ~/pocket-claude && npm run qr`.
 
 Pocket Claude now runs in the background and starts automatically whenever you log in to your Mac.
 
@@ -143,7 +145,7 @@ Usage meters at the top of the home screen show how much of your Claude plan's 5
 |---|---|
 | **"Can't reach your computer"** | The Mac is asleep, or Tailscale is off on the Mac or the phone. Wake the Mac and check that Tailscale is on (and signed into the same account) on both. |
 | **Onboarding says Tailscale isn't connected** | Open Tailscale on the Mac and log in, then run `cd ~/pocket-claude && npm run onboard` again. |
-| **Onboarding stuck at step 4 (Tailscale)** | Tailscale is waiting for you to enable **Serve**. Look for a `login.tailscale.com/f/serve…` link in Terminal, open it and click **Enable**. Setup then continues by itself. |
+| **Onboarding stuck at step 4 (Tailscale)** | Tailscale is waiting for you to enable **Serve**. Click **Enable in Tailscale** on the "Connect your phone" page (or open the `login.tailscale.com/f/serve…` link in Terminal). Setup then continues by itself. |
 | **Onboarding says `tailscale serve` failed** | Turn on **HTTPS Certificates** (Part 1, Step 5) and run onboarding again. |
 | **"Claude Code is not signed in"** | Run `claude`, sign in, type `/exit`, and run onboarding again. |
 | **The setup code doesn't work** | Use the newest code shown in Terminal. Run `npm run onboard` again to see it. |
@@ -179,6 +181,7 @@ Phone app / web app ──HTTPS + WebSocket over Tailscale──▶ tailscale se
 | Command | What it does |
 | --- | --- |
 | `npm run onboard` | Guided setup: checks, build, background service, Tailscale, QR code |
+| `npm run qr` | Open the "Connect your phone" page (QR code), only on this Mac |
 | `npm run setup` | Change the PIN or default folder from the terminal |
 | `npm run build` | Rebuild the web app |
 | `npm run dev` | Bridge with reload + Vite at http://127.0.0.1:5173 |

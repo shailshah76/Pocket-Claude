@@ -11,6 +11,8 @@ import { COOKIE, completeSetup, getSetupCode, login, needsSetup, parseCookie, re
 import { SessionHub, type Runtime } from './sessions.js';
 import { FsError, list, readText, safePath } from './fs.js';
 import { addSubscription, initPush, removeSubscription, sendPush } from './push.js';
+import { isLocalBrowser, renderPairPage } from './pair.js';
+import { tailscaleState } from './tailscale.js';
 import type { ClientMsg, PermissionMode, ServerMsg } from '../shared/types.js';
 
 const cfg = loadConfig();
@@ -225,6 +227,13 @@ app.get('/ws', { websocket: true }, (ws, req) => {
   void req;
 });
 
+// ── pairing page (this Mac's browser only) ────────────────────────────────
+app.get('/pair', async (req, reply) => {
+  if (!isLocalBrowser(req)) return reply.code(404).send('Not found');
+  const html = await renderPairPage(await tailscaleState(cfg.port), getSetupCode(), hostname().replace(/\.local$/, ''));
+  reply.header('cache-control', 'no-store').type('text/html').send(html);
+});
+
 // ── static PWA ────────────────────────────────────────────────────────────
 if (existsSync(WEB_DIST)) {
   await app.register(fastifyStatic, {
@@ -249,5 +258,5 @@ console.log(`Pocket Claude bridge listening on http://127.0.0.1:${cfg.port}`);
 const code = getSetupCode();
 if (code) {
   console.log(`\nFirst-time setup: open the app on your phone and enter this code:\n\n    ${code.slice(0, 4)}-${code.slice(4)}\n`);
-  console.log(`(Or run  npm run onboard  for a QR code that fills it in.)`);
+  console.log(`Or open http://127.0.0.1:${cfg.port}/pair on this Mac for a QR code.`);
 }

@@ -13,7 +13,8 @@
     "service:restart": "scripts/service.sh restart",
     "service:status": "scripts/service.sh status",
     "icons": "node scripts/make-icons.mjs",
-    "onboard": "tsx scripts/onboard.ts"
+    "onboard": "tsx scripts/onboard.ts",
+    "qr": "open http://127.0.0.1:7878/pair"
   },
   "type": "module",
   "dependencies": {
@@ -22,6 +23,7 @@
     "@fastify/static": "^10.1.6",
     "@fastify/websocket": "^11.3.4",
     "fastify": "^5.12.7",
+    "qrcode": "^1.5.4",
     "qrcode-terminal": "^0.12.0",
     "tsx": "^4.23.15",
     "web-push": "^3.6.7"
@@ -29,6 +31,7 @@
   "devDependencies": {
     "@types/diff": "^7.0.2",
     "@types/node": "^26.6.5",
+    "@types/qrcode": "^1.5.6",
     "@types/qrcode-terminal": "^0.12.2",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",

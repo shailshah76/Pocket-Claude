@@ -84,6 +84,11 @@ if (platform() === 'darwin') {
   process.exit(1);
 }
 
+// A browser page on this Mac shows live status and, once ready, a large QR code.
+const PAIR_URL = `http://127.0.0.1:${PORT}/pair`;
+if (platform() === 'darwin') spawnSync('open', [PAIR_URL]);
+console.log(`\n  A page opened in your browser to connect your phone: ${b(PAIR_URL)}`);
+
 // 4. tailscale
 step('4. Making it reachable from your phone (Tailscale)');
 const tsBin = which('tailscale') ?? ['/Applications/Tailscale.app/Contents/MacOS/Tailscale'].find(existsSync) ?? null;
@@ -122,6 +127,7 @@ if (!tsBin) {
 step('5. Open it on your phone');
 const s = await status();
 const code = s?.needsSetup && existsSync(SETUP_CODE_FILE) ? readFileSync(SETUP_CODE_FILE, 'utf8').trim() : null;
+console.log(`   The big QR code is on the page in your browser (${PAIR_URL}). Reopen it any time with: npm run qr`);
 if (url) {
   const target = code ? `${url}/?setup=${code}` : url;
   qrcode.generate(target, { small: true }, (q) => console.log(q.replace(/^/gm, '   ')));
