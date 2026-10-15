@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "Pocket Claude",
+    "slug": "pocket-claude",
+    "scheme": "pocketclaude",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "backgroundColor": "#141413",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "dev.pocketclaude.app"
+    },
+    "android": {
+      "package": "dev.pocketclaude.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#141413",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "softwareKeyboardLayoutMode": "resize",
+      "permissions": ["android.permission.CAMERA", "android.permission.VIBRATE"],
+      "blockedPermissions": ["android.permission.RECORD_AUDIO"]
+    },
+    "plugins": [
+      "expo-secure-store",
+      "expo-font",
+      "expo-router",
+      "expo-status-bar",
+      ["expo-camera", { "cameraPermission": "Scan the QR code shown on your computer", "recordAudioAndroid": false, "barcodeScannerEnabled": true }],
+      ["expo-build-properties", { "android": { "usesCleartextTraffic": true } }],
+      ["expo-splash-screen", { "image": "./assets/splash-icon.png", "imageWidth": 120, "backgroundColor": "#faf9f5", "dark": { "backgroundColor": "#141413" } }]
+    ],
+    "experiments": { "typedRoutes": false }
+  }
+}

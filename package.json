@@ -1,0 +1,51 @@
+{
+  "name": "pocket-claude",
+  "version": "0.1.0",
+  "description": "Chat with Claude Code on your Mac from your phone",
+  "scripts": {
+    "setup": "tsx server/setup.ts",
+    "dev": "concurrently -k -n server,web -c yellow,cyan \"tsx watch server/index.ts\" \"vite --config web/vite.config.ts\"",
+    "build": "vite build --config web/vite.config.ts",
+    "start": "tsx server/index.ts",
+    "typecheck": "tsc -p . && tsc -p web",
+    "service:install": "scripts/service.sh install",
+    "service:uninstall": "scripts/service.sh uninstall",
+    "service:restart": "scripts/service.sh restart",
+    "service:status": "scripts/service.sh status",
+    "icons": "node scripts/make-icons.mjs",
+    "onboard": "tsx scripts/onboard.ts"
+  },
+  "type": "module",
+  "dependencies": {
+    "@anthropic-ai/claude-agent-sdk": "^0.3.300",
+    "@fastify/cookie": "^11.1.3",
+    "@fastify/static": "^10.1.6",
+    "@fastify/websocket": "^11.3.4",
+    "fastify": "^5.12.7",
+    "qrcode-terminal": "^0.12.0",
+    "tsx": "^4.23.15",
+    "web-push": "^3.6.7"
+  },
+  "devDependencies": {
+    "@types/diff": "^7.0.2",
+    "@types/node": "^26.6.5",
+    "@types/qrcode-terminal": "^0.12.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@types/web-push": "^3.6.4",
+    "@types/ws": "^8.18.2",
+    "@vitejs/plugin-react": "^6.1.2",
+    "concurrently": "^10.0.6",
+    "diff": "^9.0.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.4",
+    "vite-plugin-pwa": "^2.0.0",
+    "workbox-core": "^7.4.1",
+    "workbox-precaching": "^7.4.1"
+  },
+  "private": true
+}
